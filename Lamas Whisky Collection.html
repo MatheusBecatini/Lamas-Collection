@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lamas Whisky Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1a2a4a 100%);
+            color: #f1f5f9;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: #d4af37;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #d4af37, transparent);
+            margin: 20px auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            border-color: #d4af37;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.1);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 280px;
+            background: rgba(15, 23, 42, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 20px;
+        }
+
+        .card-content {
+            padding: 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .whisky-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #d4af37;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .whisky-type {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .evaluation {
+            font-size: 1.3rem;
+            color: #e2e8f0;
+            font-weight: 500;
+            margin: 20px 0;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .specs {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .abv {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #d4af37;
+        }
+
+        .abv-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 20px;
+        }
+
+        .modal-title {
+            flex-grow: 1;
+        }
+
+        .modal-title h2 {
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .modal-type {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #d4af37;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #e2e8f0;
+            transform: scale(1.1);
+        }
+
+        .modal-image {
+            width: 150px;
+            height: 200px;
+            margin: 0 0 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 15px;
+        }
+
+        .modal-specs {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #d4af37;
+        }
+
+        .spec-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .spec-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .spec-value {
+            font-size: 1.3rem;
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .modal-review {
+            color: #e2e8f0;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .modal-review p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .modal-review p:last-child {
+            margin-bottom: 0;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .footer-text {
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .card-content {
+                padding: 20px;
+            }
+
+            .whisky-name {
+                font-size: 1.5rem;
+            }
+
+            .evaluation {
+                font-size: 1.1rem;
+            }
+
+            .modal-content {
+                padding: 25px;
+                width: 95%;
+            }
+
+            .modal-title h2 {
+                font-size: 2rem;
+            }
+
+            .modal-specs {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Lamas Collection</h1>
+            <div class="divider"></div>
+            <p class="tagline">Uma jornada através dos whiskies brasileiros premium</p>
+        </header>
+
+        <div class="grid" id="whiskiesGrid"></div>
+
+        <footer>
+            <p class="footer-text">🥃 Lamas Destilaria - Whiskies Brasileiros Premium</p>
+            <p class="footer-text">Matheus Becatini's Whisky Collection | Belo Horizonte, MG</p>
+        </footer>
+    </div>
+
+    <!-- Modal -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <h2 id="modalWhiskyName">Whisky Name</h2>
+                    <p class="modal-type" id="modalWhiskyType">Type</p>
+                </div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="Whisky">
+            </div>
+            <div class="modal-specs">
+                <div class="spec-item">
+                    <span class="spec-label">Teor Alcoólico</span>
+                    <span class="spec-value" id="modalABV">43%</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Características</span>
+                    <span class="spec-value" id="modalDescription">-</span>
+                </div>
+            </div>
+            <div class="modal-review">
+                <p id="modalFullReview">Review details here...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const whiskies = [
+            {
+                name: 'Canem',
+                type: 'Blended Whisky',
+                abv: '40%',
+                description: 'Leve, adocicado, acessível',
+                image: 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/da93bc31894e63dd231fdcbd90d5277d773b8c7f.jpg',
+                fullReview: 'O Whisky Canem é um rótulo híbrido que combina aproximadamente ⅔ de grain whisky e ⅓ de malt whisky, ambos maturados em carvalho americano. Essa composição gera um perfil mais leve e acessível, já que o grain whisky costuma ser mais suave e menos oleoso que um single malt 100% de cevada maltada. É um bom candidato para o primeiro copo da noite, para ir aquecendo o paladar antes de partir para os single malts mais estruturados.'
+            },
+            {
+                name: 'Plenus',
+                type: 'Single Malt',
+                abv: '43%',
+                description: 'Equilibrado, cítrico, suave',
+                image: 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/6800df2002bba80106d20d30d1c31982e0bb3d6a.jpg',
+                fullReview: 'O Lamas Plenus é o single malt "clássico" da Lamas, a primeira expressão da destilaria e o rótulo mais tradicional da casa. Maturado em barris de carvalho americano, sem corante e sem filtragem a frio, apresenta um perfil bem equilibrado e agradável. No nariz, aparecem notas de doce de malte, floral, cítrico e baunilha. Em boca, combina álcool não agressivo com cítrico, taninos de carvalho, baunilha, mel, amêndoa e um leve apimentado de especiarias, entregando um single malt suave, harmônico e fácil de beber.'
+            },
+            {
+                name: 'Verus',
+                type: 'Single Malt',
+                abv: '43%',
+                description: 'Complexo, amadeirado, intermediário',
+                image: 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/d5c9c110c355a321ec4673ee0ae9cc004dbc4572.jpg',
+                fullReview: 'O Lamas Verus faz parte da família de single malts não defumados da Lamas e fica, em intensidade, entre o Plenus e o Rarus na linha lógica de evolução. Esse rótulo adiciona corpo, madeira e complexidade em relação ao Plenus, sem chegar à doçura e à "musicalidade" que muitos descrevem no Rarus. É o ponto ideal entre a suavidade inicial e a elegância gourmand da sequência.'
+            },
+            {
+                name: 'Rarus',
+                type: 'Single Malt',
+                abv: '43%',
+                description: 'Doce, gourmand, elegante',
+                image: 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/9fe5cf8d4480234c393821369f5e8152b9797af2.jpg',
+                fullReview: 'O Lamas Rarus é um single malt brasileiro engarrafado a 43%, sem filtragem a frio e sem adição de corante, com cor totalmente natural. Ele passa por dupla maturação: primeiro em barris de carvalho americano e depois é finalizado em outros barris, também de carvalho americano, o que aprofunda as notas de madeira e doçura. No aroma, se destacam notas frutadas com coco e baunilha, dando uma pegada bem gourmand. No paladar, aparecem mel, caramelo, açúcar mascavo e coco, com final médio e adocicado. É um dos whiskies mais elegantes e equilibrados do portfólio permanente da Lamas.'
+            },
+            {
+                name: 'Nimbus',
+                type: 'Single Malt (Defumado)',
+                abv: '43%',
+                description: 'Defumado, mentolado, seco',
+                image: 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/21d5876b867d64958b4e4c306bbf3a5b69006cc0.jpg',
+                fullReview: 'O Lamas Nimbus é o single malt defumado da Lamas, pensado para nacionalizar o efeito da turfa usando madeira de reflorestamento para defumar o malte. Maturado em carvalho americano ex-bourbon, sem corante e sem filtragem a frio. No nariz, traz aroma defumado com notas de bacon e toques enfumaçados, lembrando lareira e fumaça. Em boca, começa suave e levemente adocicado, evoluindo para um perfil mais seco e enfumaçado, com sensação mentolada interessante e final longo, progressivamente defumado. Uma excelente porta de entrada para quem quer explorar whiskies fumados.'
+            },
+            {
+                name: 'Nimbus Robustus',
+                type: 'Single Malt (Defumado)',
+                abv: '54%',
+                description: 'Intenso, enfumaçado, potente',
+                image: 'https://pplx-res.cloudinary.com/image/upload/pplx_search_images/4f13a825218bd704b631d82eab1a41ade079ed0f.jpg',
+                fullReview: 'O Nimbus Robustus é a versão "cask strength brasileira" do Nimbus: um single malt defumado com 54% de álcool, o máximo permitido no Brasil. Maturado em carvalho americano ex-bourbon, sem corante e sem filtragem a frio, nasceu de uma prova direto do barril em que se percebeu que o whisky ganhava muito em complexidade ao ser engarrafado com graduação mais alta. No aroma, aparecem notas intensas de defumado, levemente adocicado e herbáceo, com muita fumaça e toques de bacon, caramelo e baunilha. No paladar, é enfumaçado e doce, com nuances de frutas secas, mentolado perceptível, picância de especiarias e um final longo, bem defumado, que lembra churrasqueira apagando, brasa e geleia rústica de frutas secas. Uma experiência sensorial completa para os apaixonados por whiskies potentes.'
+            }
+        ];
+
+        function renderCards() {
+            const grid = document.getElementById('whiskiesGrid');
+            grid.innerHTML = whiskies.map((whisky, index) => `
+                <div class="card" onclick="openModal(${index})">
+                    <div class="card-image">
+                        <img src="${whisky.image}" alt="${whisky.name}">
+                    </div>
+                    <div class="card-content">
+                        <div>
+                            <div class="whisky-name">${whisky.name}</div>
+                            <div class="whisky-type">${whisky.type}</div>
+                            <div class="evaluation">${whisky.description}</div>
+                        </div>
+                        <div class="specs">
+                            <div>
+                                <div class="abv-label">Álcool</div>
+                                <div class="abv">${whisky.abv}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(index) {
+            const whisky = whiskies[index];
+            document.getElementById('modalWhiskyName').textContent = whisky.name;
+            document.getElementById('modalWhiskyType').textContent = whisky.type;
+            document.getElementById('modalABV').textContent = whisky.abv;
+            document.getElementById('modalDescription').textContent = whisky.description;
+            document.getElementById('modalImage').src = whisky.image;
+            document.getElementById('modalFullReview').textContent = whisky.fullReview;
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('reviewModal').classList.remove('active');
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('reviewModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        renderCards();
+    </script>
+</body>
+</html>
